@@ -1,0 +1,11 @@
+*.db-journal
+*.db
+*.mp3
+*.pyc
+Bot/plugins/__pycache__/handlers.cpython-38.pyc
+*.session
+*.jpeg
+*.png
+/workspace/AudioBook_Bot/Downloads/
+/workspace/AudioBook_Bot/Downloads/*
+*.jpg
