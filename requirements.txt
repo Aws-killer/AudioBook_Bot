@@ -13,4 +13,5 @@ aria2p
 jinja2
 hachoir
 six
+aiosqlite
 fuzzywuzzy[speedup]
