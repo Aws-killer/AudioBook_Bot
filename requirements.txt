@@ -2,6 +2,7 @@ aiohttp
 bs4
 uvloop
 ujson
+lxm
 elasticsearch[async]==7.10.0
 pyrogram
 SQLAlchemy
