@@ -124,12 +124,19 @@ async def uploadFiles(client, booksBot):
                 )
                 for i in _files
             ]
-
-            await booksBot.send_photo(
+            while True:
+                #
+                try:
+                    #
+                    await booksBot.send_photo(
                 chat_id=int(config_obj["telegram"]["archive_id"]),
                 photo=_meta["image"].replace("SL160", "SL300"),
                 caption=post_template.render(**_meta),
             )
+                    break
+                except FloodWait as e:
+                    asyncio.sleep(e.value)
+
 
             msgs = []
             for batch in divide_chunks(audio_media, 8):
