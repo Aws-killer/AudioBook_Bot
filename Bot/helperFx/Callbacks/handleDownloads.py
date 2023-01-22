@@ -200,7 +200,11 @@ async def download_status(client, booksBot):
                 )
                 reply = f" {item.title} {percentage:.2f}% \n {progress}"
                 if item.progress != percentage:
-                    await i.edit_text(reply)
+                    try:
+                        #
+                        await i.edit_text(reply)
+                    except:
+                        pass   
 
                 item.progress = percentage
                 await addRow(item)
