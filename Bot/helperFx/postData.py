@@ -7,7 +7,6 @@ from hachoir.parser import createParser
 from Bot import config_obj
 from pyrogram.types import InputMediaPhoto, InputMediaAudio
 from aria2p.utils import human_readable_bytes, human_readable_timedelta
-from Bot.helperFx.Schemas.dlSchema import session, DownloadDb
 from six.moves.urllib.request import urlretrieve
 
 
@@ -80,14 +79,3 @@ async def postData(query, client: Client = None):
         # )
     return datas[results.index(max(results))]
     # await client.send_audio(,)
-
-
-# asyncio.run(
-#     postData(
-#         {
-#             "meta": "CHRISTINA LAUREN  DATING YOU  HATING You",
-#             "title": "DATING YOU HATING You",
-#             "author": "CHRISTINA LAUREN",
-#         }
-#     )
-# )
