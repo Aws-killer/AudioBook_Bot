@@ -154,6 +154,7 @@ async def uploadFiles(client, booksBot):
 
 async def download_status(client, booksBot):
     while True:
+        
         print("re loop")
         q = select(DownloadDb).where(DownloadDb.download_status == -1)
         for item in await query(q):
@@ -167,8 +168,11 @@ async def download_status(client, booksBot):
             else:
                 percentage = 0
             if int(percentage) == 100:
+                
                 item.download_status = 0
-                await asyncio.gather(
+                try:
+                     #
+                     await asyncio.gather(
                     *[
                         addRow(item),
                         i.edit_text(
@@ -183,6 +187,8 @@ async def download_status(client, booksBot):
                         ),
                     ]
                 )
+               except:
+                   pass
 
             else:
                 progress = "{0}{1} {2}%".format(
