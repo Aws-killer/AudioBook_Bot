@@ -133,9 +133,10 @@ async def uploadFiles(client, booksBot):
                 photo=_meta["image"].replace("SL160", "SL300"),
                 caption=post_template.render(**_meta),
             )
+                    
                     break
                 except FloodWait as e:
-                    asyncio.sleep(e.value)
+                    await asyncio.sleep(e.value)
 
 
             msgs = []
