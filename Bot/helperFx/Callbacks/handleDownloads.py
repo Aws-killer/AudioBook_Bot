@@ -171,8 +171,9 @@ async def download_status(client, booksBot):
                 
                 item.download_status = 0
                 try:
-                     #
-                     await asyncio.gather(
+
+                    #
+                    await asyncio.gather(
                     *[
                         addRow(item),
                         i.edit_text(
@@ -187,8 +188,9 @@ async def download_status(client, booksBot):
                         ),
                     ]
                 )
-               except:
-                   pass
+                except:
+                    
+                    pass
 
             else:
                 progress = "{0}{1} {2}%".format(
