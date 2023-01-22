@@ -1,5 +1,6 @@
 aiohttp
 bs4
+uvloop
 ujson
 elasticsearch[async]==7.10.0
 pyrogram
