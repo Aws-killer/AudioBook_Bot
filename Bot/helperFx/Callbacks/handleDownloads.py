@@ -169,8 +169,8 @@ async def uploadFiles(client, booksBot):
                 await asyncio.gather(*[add_2index(body=_meta), deleteRow(item)])
                 await ubuntu_cleaner(parent)
         except Exception as e:
-            # await deleteRow(item)
-            # await ubuntu_cleaner(parent)
+            await deleteRow(item)
+            await ubuntu_cleaner(parent)
             print("Loop error", e)
 
 
