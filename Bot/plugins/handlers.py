@@ -67,10 +67,17 @@ async def handle_callback(client: Client, callback_query: CallbackQuery):
     q = select(IndexDb).where(IndexDb.id == data)
     item: IndexDb = await query(q, "one")
     data = await quickSearch(item.page.split("/")[-2])
+
+
+    q = select(DownloadDb).where(DownloadDb.page == item.page.split("/")[-2])
+    copy: DownloadDb = await query(q, "one")
+ 
+
     print(data)
-    if data != None:
+    if data != None or copy:
         await clearDb(item)
         pprint.pprint(data)
+
         return
     print(item.page.split("/")[-2])
 
