@@ -16,7 +16,6 @@ request_data = {
 
 
 async def Get_Links(page_link, check=True):
-
     async with aiohttp.ClientSession() as session:
         resp = await session.get(page_link)
         page = await resp.text()
@@ -33,9 +32,7 @@ async def Get_Links(page_link, check=True):
 
 
 async def Fla(query):
-
     async with aiohttp.ClientSession() as session:
-
         data = {
             "s": f"{query}",
             "action": "searchwp_live_search",
@@ -50,7 +47,6 @@ async def Fla(query):
         async with session.get(
             f"https://test-books-scraper.api86.workers.dev/?book={query}"
         ) as resp:
-
             string = await resp.text()
 
             result = [

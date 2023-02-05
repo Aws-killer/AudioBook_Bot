@@ -46,7 +46,6 @@ def divide_chunks(l, n):
     items = []
 
     for i in range(0, len(l), n):
-
         items.append(l[i : i + n])
     return items
 
@@ -89,80 +88,95 @@ async def calcSize(client, gids):
 
 
 async def uploadFiles(client, booksBot):
+
+    print('upload started')
     while True:
-
-        q = select(DownloadDb).where(DownloadDb.download_status == 0)
-        for item in await query(q):
-            item: DownloadDb
-            _meta = await postData(
-                {
-                    "meta": clean.sub(" ", f"{item.title} {item.author}"),
-                    "title": item.title,
-                    "author": item.author,
-                }
-            )
-
-            # upload and get the message_ids
-            parent = f"{os.getcwd()}/Downloads/{item.title}"
-            _files = []
-
-            for directory, dirnames, filenames in os.walk(parent):
-                # print(filenames)
-
-                _files.extend(
-                    [os.path.join(parent, filename) for filename in filenames]
+        # print('upload')
+        try:
+            q = select(DownloadDb).where(DownloadDb.download_status == 0)
+            for item in await query(q):
+                
+                item: DownloadDb
+                _meta = await postData(
+                    {
+                        "meta": clean.sub(" ", f"{item.title} {item.author}"),
+                        "title": item.title,
+                        "author": item.author,
+                    }
                 )
-                # print(filenames)
-            _files = sorted(_files)
-            audio_media = [
-                InputMediaAudio(
-                    media=i,
-                    duration=extractMetadata(createParser(i)).get("duration").seconds,
-                    title=f"{item.title} {_files.index(i)+1} ",
-                    performer=item.author,
-                    thumb=download_file(_meta["image"], name=item.title),
-                )
-                for i in _files
-            ]
-            while True:
-                #
-                try:
-                    #
-                    await booksBot.send_photo(
-                chat_id=int(config_obj["telegram"]["archive_id"]),
-                photo=_meta["image"].replace("SL160", "SL300"),
-                caption=post_template.render(**_meta),
-            )
-                    
-                    break
-                except FloodWait as e:
-                    await asyncio.sleep(e.value)
+                print("metadata is fine,", _meta)
+                if _meta == []:
+                    print("No metadata found")
+                    print(_meta)
+                # upload and get the message_ids
+                
+                
+                
+                parent = f"{os.getcwd()}/Downloads/{item.title}"
+                _files = []
 
+                for directory, dirnames, filenames in os.walk(parent):
+                    # print(filenames)
 
-            msgs = []
-            for batch in divide_chunks(audio_media, 8):
-                pprint.pprint(batch)
+                    _files.extend(
+                        [os.path.join(parent, filename) for filename in filenames]
+                    )
+                    # print(filenames)
+                _files = sorted(_files)
+                audio_media = [
+                    InputMediaAudio(
+                        media=i,
+                        duration=extractMetadata(createParser(i))
+                        .get("duration")
+                        .seconds,
+                        title=f"{item.title} {_files.index(i)+1} ",
+                        performer=item.author,
+                        thumb=download_file(_meta["image"], name=item.title),
+                    )
+                    for i in _files
+                ]
                 while True:
+                    #
                     try:
-                        x = await booksBot.send_media_group(
-                            chat_id=config_obj["telegram"]["archive_id"],
-                            media=batch,
+                        #
+                        await booksBot.send_photo(
+                            chat_id=int(config_obj["telegram"]["archive_id"]),
+                            photo=_meta["image"].replace("SL160", "SL300"),
+                            caption=post_template.render(**_meta),
                         )
-                        msgs.extend([i.id for i in x])
 
-                        await asyncio.sleep(1)
                         break
                     except FloodWait as e:
                         await asyncio.sleep(e.value)
-            _meta["ids"] = msgs
-            _meta["slug"] = item.page
-            await asyncio.gather(*[add_2index(body=_meta), deleteRow(item)])
-            await ubuntu_cleaner(parent)
+
+                msgs = []
+                for batch in divide_chunks(audio_media, 8):
+                    pprint.pprint(batch)
+                    while True:
+                        try:
+                            x = await booksBot.send_media_group(
+                                chat_id=config_obj["telegram"]["archive_id"],
+                                media=batch,
+                            )
+                            msgs.extend([i.id for i in x])
+
+                            await asyncio.sleep(1)
+                            break
+                        except FloodWait as e:
+                            await asyncio.sleep(e.value)
+                _meta["ids"] = msgs
+                _meta["slug"] = item.page
+                await asyncio.gather(*[add_2index(body=_meta), deleteRow(item)])
+                await ubuntu_cleaner(parent)
+        except Exception as e:
+            # await deleteRow(item)
+            # await ubuntu_cleaner(parent)
+            print("Loop error", e)
 
 
 async def download_status(client, booksBot):
+    print('status started')
     while True:
-        
         print("re loop")
         q = select(DownloadDb).where(DownloadDb.download_status == -1)
         for item in await query(q):
@@ -176,28 +190,25 @@ async def download_status(client, booksBot):
             else:
                 percentage = 0
             if int(percentage) == 100:
-                
                 item.download_status = 0
                 try:
-
                     #
                     await asyncio.gather(
-                    *[
-                        addRow(item),
-                        i.edit_text(
-                            download_template.render(
-                                **{
-                                    "name": unquote(item.title),
-                                    "emoji": emoji.emojize(":check_mark_button:"),
-                                    "state": False,
-                                }
+                        *[
+                            addRow(item),
+                            i.edit_text(
+                                download_template.render(
+                                    **{
+                                        "name": unquote(item.title),
+                                        "emoji": emoji.emojize(":check_mark_button:"),
+                                        "state": False,
+                                    }
+                                ),
+                                reply_markup=None,
                             ),
-                            reply_markup=None,
-                        ),
-                    ]
-                )
+                        ]
+                    )
                 except:
-                    
                     pass
 
             else:
@@ -212,7 +223,7 @@ async def download_status(client, booksBot):
                         #
                         await i.edit_text(reply)
                     except:
-                        pass   
+                        pass
 
                 item.progress = percentage
                 await addRow(item)

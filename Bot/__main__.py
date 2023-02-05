@@ -28,8 +28,10 @@ async def main():
     _downloader.set(x)
     await init_database()
     print(_downloader)
-    asyncio.run_coroutine_threadsafe(download_status(x, books_bot), loop)
+    # await uploadFiles(x, books_bot)
     asyncio.run_coroutine_threadsafe(uploadFiles(x, books_bot), loop)
+    asyncio.run_coroutine_threadsafe(download_status(x, books_bot), loop)
+
     uvloop.install()
     await books_bot.start()
 

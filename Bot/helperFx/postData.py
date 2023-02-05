@@ -1,4 +1,5 @@
 import time, json, os
+from urllib.parse import quote_plus
 import aiohttp, re, pprint, asyncio
 from pyrogram import Client
 from fuzzywuzzy import fuzz
@@ -25,7 +26,6 @@ async def upload_files(id, client: Client):
     # )
     # pass
 
-
 async def upload_book(id):
     # upload all the files async
     #
@@ -34,12 +34,25 @@ async def upload_book(id):
 
 
 async def get_metadata(query):
-
+    print('calling query')
     async with aiohttp.ClientSession(cookie_jar=aiohttp.CookieJar()) as session:
-        resp = await session.get(
-            f"https://digitalbooks.api86.workers.dev/?query={query}"
+        [resp,gr_response] = await asyncio.gather(
+            *[
+                session.get(f"https://digitalbooks.api86.workers.dev/?query={query}"),
+                session.get(
+                    f"https://www.goodreads.com/book/auto_complete?format=json&q={query}"
+                ),
+            ]
         )
-        rez = await resp.json()
+        print('getting response')
+        [rez,gr_data]=await asyncio.gather(*[resp.json(),gr_response.json()])
+        # print('getting response')
+        
+        # exit(0)
+        print(rez,gr_data)
+        if rez == {}:
+            return [],gr_data
+
         return [
             {
                 "image": i["Images"]["Primary"]["Medium"]["URL"],
@@ -55,27 +68,52 @@ async def get_metadata(query):
                 "locale": i["ItemInfo"]["Title"]["Locale"],
             }
             for i in rez["SearchResult"]["Items"]
-        ]
+        ],gr_data
 
 
 async def postData(query, client: Client = None):
     print(query["meta"])
-    datas = await get_metadata(query["meta"])
+    datas,goodData = await get_metadata(query["meta"])
+        # print("this is datas *******************", datas)
     results = []
-    for data in datas:
+    
+    best_result = {} #from digitalbooks.io
+    best_good={ } # from goodreads
 
-        # print("-" * 100)
-        # pprint.pprint(data)
+    for data in goodData:
         authors_score = max(
-            [
-                fuzz.ratio(query["author"], author.lower()) / 100
-                for author in data["authors"]
-            ]
-        )
-        title_score = fuzz.ratio(query["title"].lower(), data["title"].lower()) / 100
+                [
+                    fuzz.ratio(query["author"], data['author']['name'].lower()) / 100
+                ]
+            )
+        title_score = fuzz.ratio(query["title"].lower(), data["bookTitleBare"].lower()) / 100
         results.append(sum([authors_score, title_score]))
-        # print(
-        #     , data["title"], authors_score, title_score
-        # )
-    return datas[results.index(max(results))]
+    goodData=goodData[results.index(max(results))]
+    results = []
+    if datas!=[]:
+        for data in datas:
+            # print("-" * 100)
+            # pprint.pprint(data)
+            authors_score = max(
+                [
+                    fuzz.ratio(query["author"], author.lower()) / 100
+                    for author in data["authors"]
+                ]
+            )
+            title_score = fuzz.ratio(query["title"].lower(), data["title"].lower()) / 100
+            results.append(sum([authors_score, title_score]))
+            # print(
+            #     , data["title"], authors_score, title_score
+            # )
+        best_result=datas[results.index(max(results))]
+    if best_result =={}:
+        best_result['author'] = [goodData['author']['name']]
+        best_result['title'] = goodData["bookTitleBare"]
+    best_result['rating']=float(goodData['avgRating'])
+    best_result['image']=goodData['imageUrl'].replace('SY75','SY400')
+    best_result['author_image'] = goodData['author']["profileUrl"]
+    # best_result['description'] = goodData["description"]
+
+    return best_result
+
     # await client.send_audio(,)

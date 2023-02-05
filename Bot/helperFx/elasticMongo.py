@@ -4,7 +4,8 @@ from pyrogram.types import Message
 from elasticsearch import AsyncElasticsearch
 
 elastic_config = config_obj["elasticsearch"]
-es = AsyncElasticsearch(hosts=[elastic_config['url']])
+es = AsyncElasticsearch(hosts=[elastic_config["url"]])
+
 
 # Fast five
 async def add_2index(body: dict):

@@ -1,5 +1,5 @@
 from pyrogram.types import *
-import emoji, time,pprint
+import emoji, time, pprint
 from pyrogram import Client, filters
 from lxml import html
 from Bot.helperFx.Schemas.dlSchema import (
@@ -27,7 +27,6 @@ def divide_chunks(l, n):
     items = []
 
     for i in range(0, len(l), n):
-
         items.append(l[i : i + n])
     return items
 
@@ -42,7 +41,6 @@ async def clearDb(item):
 
 @Client.on_message(filters.command(["start"], prefixes="/"))
 async def handle_start(_, message: Message):
-
     await message.reply_text(
         greeting_template.render(
             **{
@@ -73,7 +71,7 @@ async def handle_callback(client: Client, callback_query: CallbackQuery):
     if data != None:
         await clearDb(item)
         pprint.pprint(data)
-        return 
+        return
     print(item.page.split("/")[-2])
 
     links = await Get_Links(item.page)
@@ -138,7 +136,6 @@ async def handle_magnet(_, message: Message):
 
 @Client.on_message(filters.private)
 async def handle_query(_, message: Message):
-
     message.text
     ABooks = await Fla(message.text)
     if not ABooks:
@@ -150,7 +147,6 @@ async def handle_query(_, message: Message):
     rows = []
     _id = str(uuid.uuid4())[:8]
     for book in ABooks:
-
         item = IndexDb(
             id=str(uuid.uuid4())[:8],
             transactionId=_id,
