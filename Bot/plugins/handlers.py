@@ -141,7 +141,7 @@ async def handle_magnet(_, message: Message):
     # await message.reply_text('got magnet')
 
 
-@Client.on_message(filters.private)
+@Client.on_message(filters.private,~filters.me())
 async def handle_query(_, message: Message):
     message.text
     ABooks = await Fla(message.text)
