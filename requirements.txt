@@ -1,7 +1,9 @@
 aiohttp
 bs4
+uvloop
 ujson
-elasticsearch[async]
+lxml
+elasticsearch[async]==7.10.0
 pyrogram
 SQLAlchemy
 beautifulsoup4

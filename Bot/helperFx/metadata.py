@@ -2,7 +2,6 @@ import aiohttp, re, pprint, asyncio
 
 
 async def get_metadata(query):
-
     async with aiohttp.ClientSession(cookie_jar=aiohttp.CookieJar()) as session:
         resp = await session.get(
             f"https://digitalbooks.api86.workers.dev/?query={query}"

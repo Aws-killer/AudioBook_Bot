@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, select
+from sqlalchemy import Column, String, Integer, select, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy import create_engine
@@ -23,18 +23,18 @@ class IndexDb(Base):
 class DownloadDb(Base):
     __tablename__ = "dwnloads"
     id = Column("id", Integer, primary_key=True)
-    path = Column("path", String, default=None)
     download_status = Column(Integer, default=-1)
     title = Column("title", String, index=True)
     chat_id = Column("chat_id", String, index=True)
     message_id = Column("message_id", String, index=True)
-    links = Column("files", String, default=None)
-    # page = Column("page", String)
+    # links = Column("files", String, default=None)
+    page = Column("page", String)
     downloads = Column("downloads", String)
     gid = Column("gid", String, index=True)
+    progress = Column(Float, default=-1)
     # image = Column("image", String)
-    # author = Column("author", String)
-    status = Column("status", String, default=None, index=True)
+    author = Column("author", String)
+    # status = Column("status", String, default=None, index=True)
 
 
 engine = create_async_engine(

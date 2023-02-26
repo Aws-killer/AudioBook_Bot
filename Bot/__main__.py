@@ -1,10 +1,11 @@
 from pyrogram import Client
-import configparser, asyncio
+import configparser, asyncio, uvloop
 import os, contextvars
 from .helperFx.Callbacks.handleDownloads import (
     on_download_start,
     on_download_complete,
     download_status,
+    uploadFiles,
 )
 from .helperFx.Schemas.dlSchema import init_database
 from Bot import _downloader, books_bot
@@ -27,11 +28,15 @@ async def main():
     _downloader.set(x)
     await init_database()
     print(_downloader)
+    # await uploadFiles(x, books_bot)
+    asyncio.run_coroutine_threadsafe(uploadFiles(x, books_bot), loop)
     asyncio.run_coroutine_threadsafe(download_status(x, books_bot), loop)
+
+    uvloop.install()
     await books_bot.start()
 
 
 if __name__ == "__main__":
-
+    uvloop.install()
     loop.create_task(main())
     loop.run_forever()
