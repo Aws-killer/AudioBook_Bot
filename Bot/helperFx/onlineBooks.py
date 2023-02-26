@@ -1,7 +1,7 @@
 import aiohttp, re, pprint, asyncio
 from bs4 import BeautifulSoup
 
-pattern = 'href="(.*)">\s{1,}(\w.*) &#8211; (\w.+) Audiobook Free &raquo;'
+pattern = 'href="(.*)">\s{1,}(\w.*) &#8211; (\w.+) Audiobook(?:\s?Free)? &raquo;'
 request_data = {
     "url": "https://fulllengthaudiobooks.com/wp-admin/admin-ajax.php",
     "headers": {
